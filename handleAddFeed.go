@@ -10,13 +10,9 @@ import (
 	"github.com/google/uuid"
 )
 
-func handleCreateFeed(s *state, cmd command) error {
+func handleCreateFeed(s *state, cmd command, user database.User) error {
 	if len(cmd.args) < 2 {
 		return fmt.Errorf("Create feed hanlder need 2 arguments: name, url. Provided: %d args", len(cmd.args))
-	}
-	user, err := s.db.GetUser(context.Background(), s.cfg.CurrentUserName)
-	if err != nil {
-		return err
 	}
 	feed, err := s.db.CreateFeed(context.Background(), database.CreateFeedParams{
 		ID:        uuid.New(),

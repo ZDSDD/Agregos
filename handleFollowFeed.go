@@ -10,13 +10,9 @@ import (
 	"github.com/google/uuid"
 )
 
-func handleFollowFeed(s *state, cmd command) error {
+func handleFollowFeed(s *state, cmd command, user database.User) error {
 	if len(cmd.args) != 1 {
 		return fmt.Errorf("Follow feed requires 1 argument. Provided: %d, %v", len(cmd.args), cmd.args)
-	}
-	user, err := s.db.GetUser(context.Background(), s.cfg.CurrentUserName)
-	if err != nil {
-		return fmt.Errorf("Error when getting an user: %v\n", err)
 	}
 	feed, err := s.db.GetFeed(context.Background(), cmd.args[0])
 	if err != nil {

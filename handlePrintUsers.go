@@ -1,11 +1,12 @@
 package main
 
 import (
+	"blogAgg/internal/database"
 	"context"
 	"fmt"
 )
 
-func handlePrintUsers(s *state, _ command) error {
+func handlePrintUsers(s *state, _ command, user database.User) error {
 	users, err := s.db.GetUsers(context.Background())
 	if err != nil {
 		return fmt.Errorf("Error on db.GetUsers: %v\n", err)

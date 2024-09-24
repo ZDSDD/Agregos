@@ -3,6 +3,7 @@ package main
 import (
 	"blogAgg/internal/config"
 	"blogAgg/internal/database"
+	"context"
 	"database/sql"
 	"log"
 	"os"
@@ -37,11 +38,11 @@ func main() {
 	c.register("login", handleLogin)
 	c.register("register", registerHandler)
 	c.register("reset", handleReset)
-	c.register("users", handlePrintUsers)
+	c.register("users", middlewareLoggedIn(handlePrintUsers))
 	c.register("agg", handleAgg)
-	c.register("addfeed", handleCreateFeed)
+	c.register("addfeed", middlewareLoggedIn(handleCreateFeed))
 	c.register("feeds", handlePrintFeeds)
-	c.register("follow", handleFollowFeed)
+	c.register("follow", middlewareLoggedIn(handleFollowFeed))
 	c.register("following", handleFollowingPrint)
 
 	err = c.cmds[cmd.name](s, cmd)
@@ -50,4 +51,14 @@ func main() {
 		os.Exit(1)
 	}
 
+}
+
+func middlewareLoggedIn(handler func(s *state, cmd command, user database.User) error) func(*state, command) error {
+	return func(s *state, c command) error {
+		user, err := s.db.GetUser(context.Background(), s.cfg.CurrentUserName)
+		if err != nil {
+			return err
+		}
+		return handler(s, c, user)
+	}
 }
