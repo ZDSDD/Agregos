@@ -23,18 +23,22 @@ func handleFollowFeed(s *state, cmd command) error {
 		return fmt.Errorf("Error when getting a feed %s: %v\n", cmd.args[0], err)
 	}
 
-	_, err = s.db.CreateFeedFollow(context.Background(),
-		database.CreateFeedFollowParams{
-			ID:        uuid.New(),
-			CreatedAt: time.Now(),
-			UpdatedAt: time.Now(),
-			UserID:    user.ID,
-			FeedID:    feed.ID,
-		})
+	_, err = followFeed(s, user.ID, feed.ID)
 
 	if err != nil {
 		return nil
 	}
 	log.Printf("%s successfully followed the feed %s\n", s.cfg.CurrentUserName, feed.Name)
 	return nil
+}
+
+func followFeed(s *state, userId, feedId uuid.UUID) (database.CreateFeedFollowRow, error) {
+	return s.db.CreateFeedFollow(context.Background(),
+		database.CreateFeedFollowParams{
+			ID:        uuid.New(),
+			CreatedAt: time.Now(),
+			UpdatedAt: time.Now(),
+			UserID:    userId,
+			FeedID:    feedId,
+		})
 }

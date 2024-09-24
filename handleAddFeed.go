@@ -18,7 +18,7 @@ func handleCreateFeed(s *state, cmd command) error {
 	if err != nil {
 		return err
 	}
-	_, err = s.db.CreateFeed(context.Background(), database.CreateFeedParams{
+	feed, err := s.db.CreateFeed(context.Background(), database.CreateFeedParams{
 		ID:        uuid.New(),
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
@@ -31,5 +31,11 @@ func handleCreateFeed(s *state, cmd command) error {
 		return err
 	}
 	log.Printf("Successfuly added feed\n")
+	_, err = followFeed(s, user.ID, feed.ID)
+
+	if err != nil {
+		return nil
+	}
+	log.Printf("%s successfully followed the feed %s\n", s.cfg.CurrentUserName, feed.Name)
 	return nil
 }
