@@ -44,6 +44,7 @@ func main() {
 	c.register("feeds", handlePrintFeeds)
 	c.register("follow", middlewareLoggedIn(handleFollowFeed))
 	c.register("following", handleFollowingPrint)
+	c.register("unfollow", middlewareLoggedIn(handleUnfollow))
 
 	err = c.cmds[cmd.name](s, cmd)
 	if err != nil {

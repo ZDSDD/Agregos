@@ -23,3 +23,10 @@ FROM
 -- name: GetFeedFollow :many
 SELECT fe.* from follows fo inner join feeds fe on fo.feed_id = fe.id
 WHERE fo.user_id = (SELECT id from users u where u.name = $1); 
+
+-- name: RemoveFeedFollow :exec
+delete from follows 
+where
+ user_id = (select id from users where users.name = $1)
+ AND
+ feed_id = (select id from feeds where feeds.url = $2);
