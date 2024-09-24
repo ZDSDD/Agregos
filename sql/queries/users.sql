@@ -10,3 +10,9 @@ RETURNING *;
 
 -- name: GetUser :one
 select * from users where name = $1;
+
+-- name: ClearTable :exec
+delete from users where 1=1;
+
+-- name: GetUsers :many
+select * from users;
