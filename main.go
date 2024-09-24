@@ -38,6 +38,7 @@ func main() {
 	c.register("register", registerHandler)
 	c.register("reset", handleReset)
 	c.register("users", handlePrintUsers)
+	c.register("agg", handleAgg)
 
 	err = c.cmds[cmd.name](s, cmd)
 	if err != nil {
