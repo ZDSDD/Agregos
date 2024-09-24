@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-func handlePrintUsers(s *state, cmd command) error {
+func handlePrintUsers(s *state, _ command) error {
 	users, err := s.db.GetUsers(context.Background())
 	if err != nil {
 		return fmt.Errorf("Error on db.GetUsers: %v\n", err)

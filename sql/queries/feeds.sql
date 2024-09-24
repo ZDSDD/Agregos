@@ -11,4 +11,9 @@ insert into
 values ($1, $2, $3, $4, $5, $6) returning *;
 
 -- name: GetFeeds :many
-select f.name, f.url, u.name from feeds f inner join users u on user_id = u_id;
+SELECT 
+    f.name AS feed_name,
+    f.url,
+    u.name AS username
+FROM feeds f
+INNER JOIN users u ON f.user_id = u.id;

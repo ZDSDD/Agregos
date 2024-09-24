@@ -40,10 +40,11 @@ func main() {
 	c.register("users", handlePrintUsers)
 	c.register("agg", handleAgg)
 	c.register("addfeed", handleCreateFeed)
+	c.register("feeds", handlePrintFeeds)
 
 	err = c.cmds[cmd.name](s, cmd)
 	if err != nil {
-		log.Fatalf("Error processing command with error: %v\n", err)
+		log.Fatalf("Error processing %s with error: %v\n", cmd.name, err)
 		os.Exit(1)
 	}
 
