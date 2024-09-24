@@ -4,7 +4,6 @@ import (
 	"blogAgg/internal/config"
 	"blogAgg/internal/database"
 	"database/sql"
-	"fmt"
 	"log"
 	"os"
 
@@ -12,15 +11,18 @@ import (
 )
 
 func main() {
-	fmt.Println("Hello world")
 	var cfg, err = config.Read()
+	db, err := sql.Open("postgres", cfg.DbURL)
+	dbQueries := database.New(db)
 	if err != nil {
 		log.Fatal(err)
 	}
+	log.Printf("Succesffuly connected to the database!")
 	var s = &state{
 		cfg: cfg,
 	}
 
+	s.db = dbQueries
 	var c commands = commands{
 		cmds: make(map[string]func(*state, command) error),
 	}
@@ -33,12 +35,12 @@ func main() {
 		args: os.Args[2:],
 	}
 	c.register("login", handleLogin)
-	if err = c.cmds["login"](s, cmd); err != nil {
-		log.Fatal(err)
+	c.register("register", registerHandler)
+
+	err = c.cmds[cmd.name](s, cmd)
+	if err != nil {
+		log.Fatalf("Error processing command with error: %v\n", err)
 		os.Exit(1)
 	}
-	db, err := sql.Open("postgres", cfg.DbURL)
-	dbQueries := database.New(db)
-	s.db = dbQueries
 
 }
