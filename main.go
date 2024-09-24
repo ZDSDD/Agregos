@@ -41,6 +41,8 @@ func main() {
 	c.register("agg", handleAgg)
 	c.register("addfeed", handleCreateFeed)
 	c.register("feeds", handlePrintFeeds)
+	c.register("follow", handleFollowFeed)
+	c.register("following", handleFollowingPrint)
 
 	err = c.cmds[cmd.name](s, cmd)
 	if err != nil {

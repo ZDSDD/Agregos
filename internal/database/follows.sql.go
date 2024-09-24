@@ -73,3 +73,38 @@ func (q *Queries) CreateFeedFollow(ctx context.Context, arg CreateFeedFollowPara
 	)
 	return i, err
 }
+
+const getFeedFollow = `-- name: GetFeedFollow :many
+SELECT fe.id, fe.created_at, fe.updated_at, fe.name, fe.url, fe.user_id from follows fo inner join feeds fe on fo.feed_id = fe.id
+WHERE fo.user_id = (SELECT id from users u where u.name = $1)
+`
+
+func (q *Queries) GetFeedFollow(ctx context.Context, name string) ([]Feed, error) {
+	rows, err := q.db.QueryContext(ctx, getFeedFollow, name)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Feed
+	for rows.Next() {
+		var i Feed
+		if err := rows.Scan(
+			&i.ID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Name,
+			&i.Url,
+			&i.UserID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}

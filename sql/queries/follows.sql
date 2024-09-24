@@ -19,3 +19,7 @@ FROM
     inserted_ff
     INNER JOIN users u ON u.id = inserted_ff.user_id
     INNER JOIN feeds f ON inserted_ff.feed_id = f.id;
+
+-- name: GetFeedFollow :many
+SELECT fe.* from follows fo inner join feeds fe on fo.feed_id = fe.id
+WHERE fo.user_id = (SELECT id from users u where u.name = $1); 
