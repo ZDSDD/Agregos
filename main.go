@@ -39,6 +39,7 @@ func main() {
 	c.register("reset", handleReset)
 	c.register("users", handlePrintUsers)
 	c.register("agg", handleAgg)
+	c.register("addfeed", handleCreateFeed)
 
 	err = c.cmds[cmd.name](s, cmd)
 	if err != nil {
