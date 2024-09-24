@@ -2,9 +2,13 @@ package main
 
 import (
 	"blogAgg/internal/config"
+	"blogAgg/internal/database"
+	"database/sql"
 	"fmt"
 	"log"
 	"os"
+
+	_ "github.com/lib/pq"
 )
 
 func main() {
@@ -28,14 +32,13 @@ func main() {
 		name: os.Args[1],
 		args: os.Args[2:],
 	}
-	c.register("login", func(s *state, c command) error {
-		if len(c.args) != 1 {
-			return fmt.Errorf("login requires an username.")
-		}
-		s.cfg.SetUser(c.args[0])
-		return nil
-	})
+	c.register("login", handleLogin)
 	if err = c.cmds["login"](s, cmd); err != nil {
+		log.Fatal(err)
 		os.Exit(1)
 	}
+	db, err := sql.Open("postgres", cfg.DbURL)
+	dbQueries := database.New(db)
+	s.db = dbQueries
+
 }
