@@ -75,7 +75,7 @@ func (q *Queries) CreateFeedFollow(ctx context.Context, arg CreateFeedFollowPara
 }
 
 const getFeedFollow = `-- name: GetFeedFollow :many
-SELECT fe.id, fe.created_at, fe.updated_at, fe.name, fe.url, fe.user_id from follows fo inner join feeds fe on fo.feed_id = fe.id
+SELECT fe.id, fe.created_at, fe.updated_at, fe.name, fe.url, fe.user_id, fe.last_fetched_at from follows fo inner join feeds fe on fo.feed_id = fe.id
 WHERE fo.user_id = (SELECT id from users u where u.name = $1)
 `
 
@@ -95,6 +95,7 @@ func (q *Queries) GetFeedFollow(ctx context.Context, name string) ([]Feed, error
 			&i.Name,
 			&i.Url,
 			&i.UserID,
+			&i.LastFetchedAt,
 		); err != nil {
 			return nil, err
 		}

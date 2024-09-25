@@ -7,6 +7,7 @@ import (
 	"html"
 	"io"
 	"net/http"
+	"time"
 )
 
 type RSSFeed struct {
@@ -25,7 +26,7 @@ type RSSItem struct {
 	PubDate     string `xml:"pubDate"`
 }
 
-func fetchFeed(ctx context.Context, feedURL string) (*RSSFeed, error) {
+func fetchFeed(_ context.Context, feedURL string) (*RSSFeed, error) {
 	req, err := http.NewRequest("GET", feedURL, nil)
 	if err != nil {
 		return nil, err
@@ -50,10 +51,20 @@ func fetchFeed(ctx context.Context, feedURL string) (*RSSFeed, error) {
 }
 
 func handleAgg(s *state, cmd command) error {
-	feed, err := fetchFeed(context.Background(), "https://www.wagslane.dev/index.xml")
+	if len(cmd.args) != 1 {
+		return fmt.Errorf("agg function requires 1 arg. Given: %d: %v", len(cmd.args), cmd.args)
+	}
+	time_between_reqs, err := time.ParseDuration(cmd.args[0])
 	if err != nil {
 		return err
 	}
-	fmt.Println(feed)
+	fmt.Printf("Making api calls every %v", time_between_reqs)
+	ticker := time.NewTicker(time_between_reqs)
+	for ; ; <-ticker.C {
+		err := scrapFeeds(s)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
